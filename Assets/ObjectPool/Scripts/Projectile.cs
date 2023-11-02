@@ -4,23 +4,24 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour {
 
+    [Header("Projectile Config")]
     public TurretAI.TurretType type = TurretAI.TurretType.Single;
     public Transform target;
-    public bool lockOn;
-    //public bool track;
-    public float speed = 1;
-    public float turnSpeed = 1;
-    public bool catapult;
-
-    public float knockBack = 0.1f;
-    public float boomTimer = 1;
-    //public Vector3 _startPosition;
-    //public float dist;
-
     public ParticleSystem explosion;
+
+    [Header("Projectile Stats")]
+    [SerializeField] private float speed = 1;
+    [SerializeField] private float turnSpeed = 1;
+    [SerializeField] private float knockBack = 0.1f;
+    [SerializeField] private float boomTimer = 1;
+    [SerializeField] private bool catapult;
+
+    private bool lockOn;
 
     private void Start()
     {
+        CheckTurret(type);
+
         if (catapult)
         {
             lockOn = true;
@@ -28,56 +29,49 @@ public class Projectile : MonoBehaviour {
 
         if (type == TurretAI.TurretType.Single)
         {
-            Vector3 dir = target.position - transform.position;
-            transform.rotation = Quaternion.LookRotation(dir);
+            Vector3 direction = target.position - transform.position;
+            transform.rotation = Quaternion.LookRotation(direction);
         }
     }
 
     private void Update()
     {
-        if (target == null)
+        boomTimer -= Time.deltaTime;
+
+        if (target == null || transform.position.y < -0.2F || boomTimer < 0)
         {
             Explosion();
             return;
         }
+    }
 
-        if (transform.position.y < -0.2F)
+    public void CheckTurret(TurretAI.TurretType type)
+    {
+        switch (type)
         {
-            Explosion();
-        }
+            case TurretAI.TurretType.Single:
+                float singleSpeed = speed * Time.deltaTime;
 
-        boomTimer -= Time.deltaTime;
-        if (boomTimer < 0)
-        {
-            Explosion();
-        }
+                transform.Translate(transform.forward * singleSpeed * 2, Space.World);
+                break;
+            case TurretAI.TurretType.Dual:
+                Vector3 direction = target.position - transform.position;
+                Vector3 newDirection = Vector3.RotateTowards(transform.forward, direction, Time.deltaTime * turnSpeed, 0.0f);
 
-        if (type == TurretAI.TurretType.Catapult)
-        {
-            if (lockOn)
-            {
-                Vector3 Vo = CalculateCatapult(target.transform.position, transform.position, 1);
+                transform.Translate(Vector3.forward * Time.deltaTime * speed);
+                transform.rotation = Quaternion.LookRotation(newDirection);
+                break;
+            case TurretAI.TurretType.Catapult:
+                if (lockOn)
+                {
+                    Vector3 velocity = CalculateCatapult(target.transform.position, transform.position, 1);
 
-                transform.GetComponent<Rigidbody>().velocity = Vo;
-                lockOn = false;
-            }
-        }else if(type == TurretAI.TurretType.Dual)
-        {
-            Vector3 dir = target.position - transform.position;
-            //float distThisFrame = speed * Time.deltaTime;
-            Vector3 newDirection = Vector3.RotateTowards(transform.forward, dir, Time.deltaTime * turnSpeed, 0.0f);
-            Debug.DrawRay(transform.position, newDirection, Color.red);
-
-            //transform.Translate(dir.normalized * distThisFrame, Space.World);
-            //transform.LookAt(target);
-
-            transform.Translate(Vector3.forward * Time.deltaTime * speed);
-            transform.rotation = Quaternion.LookRotation(newDirection);
-
-        }else if (type == TurretAI.TurretType.Single)
-        {
-            float singleSpeed = speed * Time.deltaTime;
-            transform.Translate(transform.forward * singleSpeed * 2, Space.World);
+                    transform.GetComponent<Rigidbody>().velocity = velocity;
+                    lockOn = false;
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -105,10 +99,11 @@ public class Projectile : MonoBehaviour {
         if (other.transform.tag == "Player")
         {
             Vector3 dir = other.transform.position - transform.position;
-            //Vector3 knockBackPos = other.transform.position * (-dir.normalized * knockBack);
             Vector3 knockBackPos = other.transform.position + (dir.normalized * knockBack);
+
             knockBackPos.y = 1;
             other.transform.position = knockBackPos;
+
             Explosion();
         }
     }

@@ -4,27 +4,24 @@ using UnityEngine;
 
 public class WASDMovement : MonoBehaviour {
 
-	public float speed = 20f;
+    [SerializeField] private float speed; 
+    private Rigidbody playerRB;
 
-    void Update () {
-        Vector3 pos = transform.position;
+    private void Start()
+    {
+        playerRB = GetComponent<Rigidbody>();
+    }
 
-        if (Input.GetKey ("w")) {
-            pos.z += speed * Time.deltaTime;
-        }
+    void FixedUpdate () 
+    {
+        float movX = Input.GetAxis("Horizontal") * speed;
+        float movZ = Input.GetAxis("Vertical") * speed;
 
-        if (Input.GetKey ("s")) {
-            pos.z -= speed * Time.deltaTime;
-        }
+        Movement(movX, movZ);
+    }
 
-        if (Input.GetKey ("d")) {
-            pos.x += speed * Time.deltaTime;
-        }
-
-        if (Input.GetKey ("a")) {
-            pos.x -= speed * Time.deltaTime;
-        }
-         
-         transform.position = pos;
+    public void Movement(float movX, float movZ) 
+    {
+        playerRB.AddForce(new Vector3(movX, 0, movZ));
     }
 }
