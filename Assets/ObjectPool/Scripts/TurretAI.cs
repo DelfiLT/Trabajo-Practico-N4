@@ -33,8 +33,6 @@ public class TurretAI : MonoBehaviour {
     private Vector3 randomRot;
     private float timer;
     private Animator animator;
-    private Transform lockOnPos;
-
 
     void Start () 
     {
@@ -140,21 +138,22 @@ public class TurretAI : MonoBehaviour {
             case TurretType.Single:
                 SpawnBullet(muzzleMain);
                 break;
+            default:
+                break;
         }
     }
 
     private void SpawnBullet(Transform spawn)
     {
-        Instantiate(muzzleEff, spawn.transform.position, spawn.rotation);
+        Instantiate(muzzleEff, spawn.transform.position, spawn.transform.rotation);
 
         bullet = ObjectPool.SharedInstance.GetPooledObject(turretType.ToString());
 
         if (bullet != null)
         {
-            bullet.transform.position = spawn.position;
-            bullet.transform.rotation = spawn.rotation;
+            bullet.transform.position = spawn.transform.position;
+            bullet.transform.rotation = spawn.transform.rotation;
             bullet.SetActive(true);
-            Debug.Log(bullet.ToString());
         }
 
         Projectile projectile = bullet.GetComponent<Projectile>();

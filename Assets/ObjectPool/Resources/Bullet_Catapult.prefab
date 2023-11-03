@@ -4976,8 +4976,9 @@ MonoBehaviour:
   speed: 10
   turnSpeed: 1
   knockBack: 1.5
-  boomTimer: 10
   catapult: 1
+  boomTimer: 0
+  lockOn: 0
 --- !u!54 &54987683344845492
 Rigidbody:
   m_ObjectHideFlags: 0

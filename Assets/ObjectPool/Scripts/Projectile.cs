@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour {
@@ -14,36 +15,46 @@ public class Projectile : MonoBehaviour {
     [SerializeField] private float speed = 1;
     [SerializeField] private float turnSpeed = 1;
     [SerializeField] private float knockBack = 0.1f;
-    [SerializeField] private float boomTimer = 1;
     [SerializeField] private bool catapult;
+    public float boomTimer;
 
-    private bool lockOn;
+    public bool lockOn;
 
     private void Start()
     {
+        boomTimer = 0;
+
         if (catapult)
         {
             lockOn = true;
-        }
-
-        if (type == TurretAI.TurretType.Single)
-        {
-            Vector3 direction = target.position - transform.position;
-            transform.rotation = Quaternion.LookRotation(direction);
         }
     }
 
     private void Update()
     {
+        if (type == TurretAI.TurretType.Single)
+        {
+            Vector3 direction = target.position - transform.position;
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+
         CheckTurret(type);
 
-        boomTimer -= Time.deltaTime;
-
-        if (target == null || transform.position.y < -0.2F || boomTimer < 0)
+        if (target == null)
         {
             Explosion();
-            return;
         }
+
+        if (this.gameObject.activeInHierarchy)
+        {
+            boomTimer += Time.deltaTime;
+
+            if(boomTimer > 5)
+            {
+                boomTimer = 0;
+                Explosion();
+            }
+        } 
     }
 
     public void CheckTurret(TurretAI.TurretType type)
@@ -99,12 +110,6 @@ public class Projectile : MonoBehaviour {
     {
         if (other.transform.tag == "Player")
         {
-            Vector3 dir = other.transform.position - transform.position;
-            Vector3 knockBackPos = other.transform.position + (dir.normalized * knockBack);
-
-            knockBackPos.y = 1;
-            other.transform.position = knockBackPos;
-
             Explosion();
         }
     }
@@ -113,5 +118,6 @@ public class Projectile : MonoBehaviour {
     {
         Instantiate(explosion, transform.position, transform.rotation);
         this.gameObject.SetActive(false);
+        lockOn = true;
     }
 }
