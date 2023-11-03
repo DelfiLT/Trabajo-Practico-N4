@@ -8,6 +8,7 @@ public class Projectile : MonoBehaviour {
     public TurretAI.TurretType type = TurretAI.TurretType.Single;
     public Transform target;
     public ParticleSystem explosion;
+    public int poolAmmount;
 
     [Header("Projectile Stats")]
     [SerializeField] private float speed = 1;
@@ -20,8 +21,6 @@ public class Projectile : MonoBehaviour {
 
     private void Start()
     {
-        CheckTurret(type);
-
         if (catapult)
         {
             lockOn = true;
@@ -36,6 +35,8 @@ public class Projectile : MonoBehaviour {
 
     private void Update()
     {
+        CheckTurret(type);
+
         boomTimer -= Time.deltaTime;
 
         if (target == null || transform.position.y < -0.2F || boomTimer < 0)
@@ -111,6 +112,6 @@ public class Projectile : MonoBehaviour {
     public void Explosion()
     {
         Instantiate(explosion, transform.position, transform.rotation);
-        Destroy(gameObject);
+        this.gameObject.SetActive(false);
     }
 }

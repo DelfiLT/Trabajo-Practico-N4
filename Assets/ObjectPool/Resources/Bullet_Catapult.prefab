@@ -4971,13 +4971,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 3
   target: {fileID: 0}
-  lockOn: 0
+  explosion: {fileID: 198049787571439516, guid: 6d074a749488789479e539251fdf184e, type: 3}
+  poolAmmount: 10
   speed: 10
   turnSpeed: 1
-  catapult: 1
   knockBack: 1.5
   boomTimer: 10
-  explosion: {fileID: 198049787571439516, guid: 6d074a749488789479e539251fdf184e, type: 3}
+  catapult: 1
 --- !u!54 &54987683344845492
 Rigidbody:
   m_ObjectHideFlags: 0
