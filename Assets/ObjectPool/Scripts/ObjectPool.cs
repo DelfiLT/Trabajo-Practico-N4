@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class ObjectPool : MonoBehaviour
 {
@@ -47,6 +48,11 @@ public class ObjectPool : MonoBehaviour
                 return gameObject;
             }
         }
-        return null;
+
+        GameObject objectAdd = Instantiate(listsToPool[bulletType].Last().gameObject);
+        objectAdd.SetActive(false);
+        listsToPool[bulletType].Add(objectAdd);
+
+        return objectAdd;
     }
 }
