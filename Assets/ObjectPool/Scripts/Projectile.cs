@@ -16,9 +16,9 @@ public class Projectile : MonoBehaviour {
     [SerializeField] private float turnSpeed = 1;
     [SerializeField] private float knockBack = 0.1f;
     [SerializeField] private bool catapult;
-    public float boomTimer;
 
-    public bool lockOn;
+    private float boomTimer;
+    private bool lockOn;
 
     private void Start()
     {
@@ -49,7 +49,7 @@ public class Projectile : MonoBehaviour {
         {
             boomTimer += Time.deltaTime;
 
-            if(boomTimer > 5)
+            if(boomTimer > 2)
             {
                 boomTimer = 0;
                 Explosion();
@@ -110,6 +110,12 @@ public class Projectile : MonoBehaviour {
     {
         if (other.transform.tag == "Player")
         {
+            Vector3 dir = other.transform.position - transform.position;
+            Vector3 knockBackPos = other.transform.position + (dir.normalized * knockBack);
+
+            knockBackPos.y = 1;
+            other.transform.position = knockBackPos;
+
             Explosion();
         }
     }
